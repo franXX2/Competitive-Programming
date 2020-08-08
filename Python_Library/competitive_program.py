@@ -425,9 +425,3 @@ class Primes():
             return "Unknown"
 
 
-def main():
-    # start coding here...
-    print("Hello World")   
-
-if __name__ == "__main__":
-    main()
