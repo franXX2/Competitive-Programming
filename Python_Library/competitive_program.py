@@ -469,3 +469,71 @@ def trial(X, order, K):
             return True
         b = b**2 % X
     return False
+    
+#import numpy as np
+def find_sequence(N,Terms,coefficients,mod):
+    
+    #given the sequence in the form below:
+        #[first K term] := a0,a1.......a(k-1)
+        #[recurrence relation] := a(n+k)= b(k-1)*a(n+k-1)+....... b(0)*a(n)
+        
+    #Then,define Terms and coefficients as follows:
+        #Terms := [a0....... ak]
+        #coefficients :=[b0.....bk]
+        
+    # return a_n  %mod  in O(K**2 log N), which is much faster than matrix_binary_powering_method,which works in O(K**3 logN).
+    #Note that mod*K<2**64 in order to avoid overflow error.
+    
+    assert len(Terms)==len(coefficients)
+    K=len(coefficients)
+    data=[N]
+    while N:
+        if N%2==0:
+            N=N//2
+            data.append(N)
+        else:
+            N-=1
+            data.append(N)
+    data.reverse()
+    
+    C = np.array([0]*K)
+    old_C = np.array([0]*K)
+    tmp_C=np.array([0]*K)
+    Cs = np.array([[0]*K for _ in range(K)])
+    cofs=np.array(coefficients)
+    #C(0,i) の定義
+    C[0] = 1
+    for i in range(len(data)-1):
+        now, nex = data[i], data[i+1]
+        old_C*=0
+        old_C += C
+        if nex == 1+now:
+            C=old_C[K-1]*cofs
+            C%=mod
+            for i in range(1,K):
+                C[i]+=old_C[i-1]
+            C%=mod
+            continue
+        else:
+            for i in range(K):
+                Cs[i]*=0
+            Cs[0]+=C
+            for i in range(1,K):
+                Cs[i]=Cs[i-1][K-1]*cofs
+                Cs[i]%=mod
+                for j in range(1,K):
+                    Cs[i][j]+=Cs[i-1][j-1]
+                Cs[i]%=mod
+            C*=0
+            Cs=Cs.T
+            for i in range(K):
+                tmp_C=0
+                tmp_C=old_C*Cs[i]
+                tmp_C%=mod
+                C[i]=np.sum(tmp_C)
+                C[i]%=mod
+    ans=0
+    for i in range(K):
+        ans+=Terms[i]*C[i]
+    ans%=mod
+    return ans
