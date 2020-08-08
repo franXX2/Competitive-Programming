@@ -424,4 +424,18 @@ class Primes():
         else:
             return "Unknown"
 
+def poly_sum(X, N, mod):
+   # return X^N +    .... X^1+1 mod
+   # O(logN)
+   if N == 0:
+       return 1
+   if N == 1:
+       return (X+1) % mod
+   else:
+       if N % 2 == 0:
+           tmp_res = poly_sum(X, N//2, mod)
+           return ((pow(X, N//2, mod)+1)*tmp_res-pow(X, N//2, mod)) % mod
 
+       elif N % 2 != 0:
+           tmp_res = poly_sum(X, N//2, mod)
+           return (pow(X, N//2+1, mod)+1)*tmp_res % mod
