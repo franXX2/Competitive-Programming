@@ -439,3 +439,33 @@ def poly_sum(X, N, mod):
        elif N % 2 != 0:
            tmp_res = poly_sum(X, N//2, mod)
            return (pow(X, N//2+1, mod)+1)*tmp_res % mod
+
+import random
+
+#ミラービンの確率的素数判定法.(10**10程度の自然数に対してはM=40程度で十分正確かつ高速に判定を行うことができる。)
+def Is_Prime(X, M):
+    if X == 1:
+        return False
+    if X == 2:
+        return True
+    K = X-1
+    order = 0
+    while K % 2 == 0:
+        order += 1
+        K = K//2
+    for i in range(M):
+        if trial(X, order, K) == False:
+            return False
+    return True
+
+
+def trial(X, order, K):
+    num = random.randint(2, X-1)
+    b = pow(num, K, X)
+    if b == 1:
+        return True
+    for j in range(order):
+        if (b+1) % X == 0:
+            return True
+        b = b**2 % X
+    return False
