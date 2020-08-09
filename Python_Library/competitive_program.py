@@ -537,3 +537,49 @@ def find_sequence(N,Terms,coefficients,mod):
         ans+=Terms[i]*C[i]
     ans%=mod
     return ans
+
+def matrix_power(A, N, mod):
+    # returnA^N %moｄ in O(K**3 log N). (K is the size of A.)
+    assert A.shape[0] == A.shape[1]
+    K = A.shape[0]
+    if N == 0:
+        return np.eye(K, dtype=np.int64)
+    else:
+        if N % 2 == 0:
+            mat = matrix_power(A, N//2, mod)
+            return np.dot(mat, mat) % mod
+        else:
+            mat = matrix_power(A, N//2, mod)
+            return np.dot(np.dot(mat, mat) % mod, A) % mod
+
+
+def Fibonacci(N, mod):
+    # return the n-th term of the fivonacci sequence  in O(logN).
+    # F0=0,F1=1
+    d = np.array([1, 0])
+    A = np.array([[1, 1], [1, 0]], dtype=np.int64)
+    res = np.dot(matrix_power(A, N, mod), d)
+    return int(res[-1]) % mod
+
+
+def fibonacci(N, mod):
+    # returns the n-th term %mod of fibbonacci seuqnce  in O(logN).
+    # you don't need to care about overflow.
+    f1, f = 1, 1
+    r1, r = 1, 0
+    while N:
+        if N & 1:
+            r1, r = (f1*r1+f*r) % mod, (f1*r+f*(r1-r)) % mod
+        f1, f = (f1**2+f**2) % mod, f*(2*f1-f) % mod
+        N >>= 1
+    return r
+
+
+def find_fibonacci_cycle(P):
+    # when modular is a prime number, returns fibonacci_periodic_cycle in O(1).
+    if P % 5 == 1 or P % 5 == 4:
+        return P-1
+    elif P % 5 == 2 or P % 5 == 3:
+        return 2*P+2
+    else:
+        return 20
